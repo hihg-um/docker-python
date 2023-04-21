@@ -1,14 +1,15 @@
 # SPDX-License-Identifier: GPL-2.0
 
 ORG_NAME := hihg-um
-PROJECT_NAME ?= python
+PROJECT_NAME ?= python3_10
 
 OS_BASE ?= ubuntu
 OS_VER ?= 22.04
 
 USER ?= `whoami`
 USERID := `id -u`
-USERGID := `id -g`
+USERGID := 5001
+USERGNAME := ad
 
 IMAGE_REPOSITORY := $(ORG_NAME)/$(USER)/$(PROJECT_NAME):latest
 

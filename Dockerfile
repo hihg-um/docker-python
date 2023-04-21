@@ -30,11 +30,10 @@ RUN groupadd -g $USERGID $USERGNAME && \
 # since it constrains the portability of the application.
 RUN apt -y update -qq && apt -y upgrade && \
 	DEBIAN_FRONTEND=noninteractive apt -y install \
-	software-properties-common vim \
-	python3 python3-bitarray python3-nose python3-numpy python3-pandas \
-	python3-pip python3-pybedtools python3-scipy python3-h5py && \
-	update-alternatives --install /usr/bin/python python \
-                 /usr/bin/python3 1
+	software-properties-common vim && add-apt-repository \
+                 ppa:deadsnakes/ppa -y && apt install python3.10 -y && \
+        update-alternatives --install /usr/bin/python python \
+                 /usr/bin/python3.10 1
 
 #--install needs <link> <name> <path> <priority>
 WORKDIR /app
