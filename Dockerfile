@@ -31,15 +31,16 @@ RUN groupadd -g $USERGID $USERGNAME && \
 RUN apt -y update -qq && apt -y upgrade && \
 	DEBIAN_FRONTEND=noninteractive apt -y install \
 	software-properties-common vim \
-	python3 python3-bitarray python3-nose python3-numpy \
+	python3 python3-bitarray python3-dask python3-nose python3-numpy \
 	python3-pandas python3-pip python3-pybedtools \
 	python3-scipy python3-h5py && \
 	update-alternatives --install /usr/bin/python python \
                  /usr/bin/python3 1
 
-WORKDIR /app
 
-RUN chown -R $USERNAME:$USERGID /app
+RUN pip install polars scikit-allel
+
+WORKDIR /app
 
 # we map the user owning the image so permissions for any mapped 
 # input/output paths set by the user will work correctly
