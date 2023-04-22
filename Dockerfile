@@ -31,9 +31,16 @@ RUN groupadd -g $USERGID $USERGNAME && \
 RUN apt -y update -qq && apt -y upgrade && \
 	DEBIAN_FRONTEND=noninteractive apt -y install \
 	software-properties-common vim \
-	python3 python3-bitarray python3-dask python3-nose python3-numpy \
-	python3-pandas python3-pip python3-pybedtools \
-	python3-scipy python3-h5py && \
+	python3 python3-bitarray python3-cloudpickle python3-dask \
+	python3-fsspec \
+	python3-h5py \
+	python3-importlib-metadata \
+	python3-locket \
+	python3-nose python3-numpy \
+	python3-pandas python3-partd python3-pip python3-pybedtools \
+	python3-scipy \
+	python3-toolz python3-typing-extensions \
+	&& \
 	update-alternatives --install /usr/bin/python python \
                  /usr/bin/python3 1
 
