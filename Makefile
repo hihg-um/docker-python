@@ -14,7 +14,7 @@ DOCKER_BUILD_ARGS :=
 
 TOOLS := python
 DOCKER_IMAGES := $(TOOLS:=\:$(DOCKER_TAG))
-SVF_IMAGES := $(TOOLS:=\:$(DOCKER_TAG).svf)
+SIF_IMAGES := $(TOOLS:=\:$(DOCKER_TAG).sif)
 
 .PHONY: clean docker test test_apptainer test_docker $(DOCKER_IMAGES)
 
@@ -24,12 +24,12 @@ help:
 	@echo "         apptainer test_apptainer"
 	@echo "Docker containers:\n$(DOCKER_IMAGES)"
 	@echo
-	@echo "Apptainer images:\n$(SVF_IMAGES)"
+	@echo "Apptainer images:\n$(SIF_IMAGES)"
 
 all: clean docker test_docker apptainer test_apptainer
 
 clean:
-	rm -f $(SVF_IMAGES)
+	rm -f $(SIF_IMAGES)
 	for f in $(TOOLS); do \
                 docker rmi -f $(ORG_NAME)/$$f 2>/dev/null; \
         done
@@ -56,13 +56,13 @@ test_docker: $(DOCKER_IMAGES)
 release_docker: $(DOCKER_IMAGES)
 	docker push $(IMAGE_REPOSITORY)/$(ORG_NAME)/$@
 
-$(SVF_IMAGES):
+$(SIF_IMAGES):
 	@echo "Building Apptainer $@"
-	apptainer build $@ docker-daemon:$(ORG_NAME)/$(patsubst %.svf,%,$@)
+	apptainer build $@ docker-daemon:$(ORG_NAME)/$(patsubst %.sif,%,$@)
 
-apptainer: $(SVF_IMAGES)
+apptainer: $(SIF_IMAGES)
 
-test_apptainer: $(SVF_IMAGES)
+test_apptainer: $(SIF_IMAGES)
 	for f in $^; do \
 		echo "Testing Apptainer image: $$f"; \
 		apptainer run $$f --version; \
