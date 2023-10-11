@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0
+ARG BASE_IMAGE
+FROM $BASE_IMAGE as builder
+
+ARG RUNCMD
+
+# in Ubuntu 23.04 and later, an error is now passed for attempting to
+# globally install packages with an external package manager like pip.
+# to solve: use virtual environments for package installs
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+# install wheel first for package building :
+RUN pip install wheel && \
+    pip install polars[all]
