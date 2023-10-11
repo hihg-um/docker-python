@@ -1,25 +1,6 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
-# user data provided by the host system via the make file
-# without these, the container will fail-safe and be unable to write output
-ARG USERNAME
-ARG USERID
-ARG USERGNAME
-ARG USERGID
-
-# Put the user name and ID into the ENV, so the runtime inherits them
-ENV USERNAME=${USERNAME:-nouser} \
-	USERID=${USERID:-65533} \
-	USERGNAME=${USERGNAME:-users} \
-	USERGID=${USERGID:-nogroup}
-
-# match the building user. This will allow output only where the building
-# user has write permissions
-RUN groupadd -g $USERGID $USERGNAME && \
-	useradd -m -u $USERID -g $USERGID -g "users" $USERNAME && \
-	adduser $USERNAME $USERGNAME
-
 # Install OS updates, security fixes and utils, generic app dependencies
 # We chain this to get it all into one layer. sw-prop-common is needed
 # for apt-add-repository, so install that first.
@@ -40,9 +21,4 @@ RUN apt -y update -qq && apt -y upgrade && \
 
 WORKDIR /app
 
-RUN chown -R $USERNAME:$USERGID /app
-
-# we map the user owning the image so permissions for any mapped 
-# input/output paths set by the user will work correctly
-USER $USERNAME
 ENTRYPOINT [ "python" ]
