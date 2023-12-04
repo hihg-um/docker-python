@@ -54,7 +54,7 @@ docker: docker_base $(TOOLS)
 $(TOOLS):
 	@echo "Building Docker container: $@"
 	@docker build \
-		-f Dockerfile.$(DOCKER_BASE) \
+		-f Dockerfile.$@ \
 		-t $(ORG_NAME)/$@:$(DOCKER_TAG) \
 		$(DOCKER_BUILD_ARGS) \
 		--build-arg BASE_IMAGE=$(ORG_NAME)/$(DOCKER_BASE):$(DOCKER_TAG) \
