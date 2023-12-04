@@ -40,3 +40,4 @@ COPY src/test/$RUN_CMD.sh ${TEST}
 RUN chmod ugo+rx ${TEST}
 
 WORKDIR /app
+
