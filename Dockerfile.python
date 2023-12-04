@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0
+ARG BASE_IMAGE
+FROM $BASE_IMAGE as builder
+
+ARG RUN_CMD 
+
+ARG TEST="/test.sh"
+COPY src/test/$RUN_CMD.sh ${TEST}
+RUN chmod ugo+rx ${TEST}

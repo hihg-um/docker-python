@@ -1,0 +1,11 @@
+--- Dockerfile.python-scripting
++++ Dockerfile.python-scripting
+@@ -16,5 +16,7 @@ RUN pip install wheel && pip install pandas[excel] && \
+ 	pip install plotly && pip install polars[all] && \
+ 	pip install scikit-allel && pip install seaborn
+ 
+-COPY src/test/$RUN_CMD.sh /test.sh
++ARG TEST="/test.sh"
++COPY src/test/$RUN_CMD.sh ${TEST}
++RUN chmod ugo+rx ${TEST}
+ 

@@ -35,8 +35,6 @@ RUN echo "LDSC_path /src/ldsc" > LDSC.config
 # directory as the AnnoPred source code.
 RUN chmod 777 .
 
-ARG TEST="/test.sh"
-COPY src/test/$RUN_CMD.sh ${TEST}
-RUN chmod ugo+rx ${TEST}
+COPY src/test/$RUN_CMD.sh /test.sh
 
 WORKDIR /app
