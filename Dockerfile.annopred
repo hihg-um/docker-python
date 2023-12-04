@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0
 ARG BASE_IMAGE
-FROM $BASE_IMAGE
+FROM ubuntu:18.04
 
 ARG RUN_CMD
 
-RUN apt -y update && apt -y upgrade \
+RUN apt -y update && apt -y upgrade && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential \
     git \

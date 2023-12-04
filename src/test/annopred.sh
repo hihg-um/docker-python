@@ -1,3 +1,3 @@
 #!/bin/bash
 
-annopred
+python /src/AnnoPred/AnnoPred.py -h
