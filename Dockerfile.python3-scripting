@@ -1,23 +1,86 @@
 # SPDX-License-Identifier: GPL-2.0
-ARG BASE_IMAGE
-FROM $BASE_IMAGE as builder
-
-LABEL org.opencontainers.image.description="Python 3 with venv suitable for running comon Python scripts"
+ARG BASE
+FROM $BASE as base
 
 ARG RUN_CMD
+
+RUN apt -y update -qq && DEBIAN_FRONTEND=noninteractive apt -y install \
+	--no-install-recommends --no-install-suggests \
+		apt-utils \
+		python3-full \
+		python3-click \
+		python3-colorcet \
+		python3-contourpy \
+		python3-cycler \
+		python3-dask \
+		python3-dateutil \
+		python3-defusedxml \
+		python3-fsspec \
+		python3-gevent \
+		python3-greenlet \
+		python3-importlib-metadata \
+		python3-importlib-resources \
+		python3-kiwisolver \
+		python3-locket \
+		python3-matplotlib \
+		python3-nest-asyncio \
+		python3-numpy \
+		python3-openpyxl \
+		python3-pandas \
+		python3-param \
+		python3-partd \
+		python3-plotly \
+		python3-pyparsing \
+		python3-pytzdata \
+		python3-requests \
+		python3-rich \
+		python3-seaborn \
+		python3-sortedcontainers \
+		python3-sqlalchemy \
+		python3-strictyaml \
+		python3-toolz \
+		python3-tornado \
+		python3-typing-extensions \
+		python3-venv \
+		python3-wheel \
+		python3-xlrd \
+		python3-xlsxwriter \
+		python3-xyzservices \
+		python3-zipp \
+		python3-zope.event \
+	&& \
+	apt -y clean && rm -rf /var/lib/apt/lists/* /tmp/*
+
+FROM base as builder
+RUN apt -y update -qq && DEBIAN_FRONTEND=noninteractive apt -y install \
+	--no-install-recommends --no-install-suggests \
+		build-essential \
+		gcc \
+		python3-dev
 
 # in Ubuntu 23.04 and later, an error is now passed for attempting to
 # globally install packages with an external package manager like pip.
 # to solve: use virtual environments for package installs
+#
+#  If you wish to install a non-Debian-packaged Python package,
+#  create a virtual environment using python3 -m venv path/to/venv.
+#  Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+#  sure you have python3-full installed.
+#
+#  If you wish to install a non-Debian packaged Python application,
+#  it may be easiest to use pipx install xyz, which will manage a
+#  virtual environment for you. Make sure you have pipx installed.
+#
+#  See /usr/share/doc/python3.12/README.venv for more information.
+
 ENV VIRTUAL_ENV=/opt/venv
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # install wheel first for package building :
-RUN pip install wheel pandas[excel] plotly polars[all] scikit-allel seaborn
+RUN pip install pandas[excel] polars[all] scikit-allel
 
-ARG TEST="/test.sh"
-COPY --chmod=0555 src/test/$RUN_CMD.sh ${TEST}
+COPY --chmod=0555 src/test/$RUN_CMD.sh /test.sh
+ENTRYPOINT [ "python3" $* ]
 
-ARG ENTRY="/entrypoint.sh"
-RUN echo "#!/bin/bash\n$RUN_CMD \$@" > ${ENTRY} && chmod ugo+rx ${ENTRY}
+LABEL org.opencontainers.image.description="Python 3 with venv suitable for running comon Python scripts"

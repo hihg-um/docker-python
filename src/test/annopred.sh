@@ -1,3 +1,3 @@
 #!/bin/bash
-
-python /src/AnnoPred/AnnoPred.py -h
+# SPDX-License-Identifier: GPL-2.0
+python /usr/src/AnnoPred/AnnoPred.py -h

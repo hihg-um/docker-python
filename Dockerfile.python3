@@ -1,13 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0
-ARG BASE_IMAGE
-FROM $BASE_IMAGE
+ARG BASE
+FROM $BASE
 
-LABEL org.opencontainers.image.description="bare bones Python 3 container"
-
+ARG BASE
 ARG RUN_CMD
 
-ARG TEST="/test.sh"
-COPY --chmod=0555 src/test/$RUN_CMD.sh ${TEST}
+COPY --chmod=0555 src/test/${RUN_CMD}.sh /test.sh
 
-ARG ENTRY="/entrypoint.sh"
-RUN echo "#!/bin/bash\n$RUN_CMD \$@" > ${ENTRY} && chmod ugo+rx ${ENTRY}
+ENTRYPOINT [ "python3" ]
+
+LABEL org.opencontainers.image.description="bare bones Python 3 container"

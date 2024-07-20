@@ -1,41 +1,61 @@
 # SPDX-License-Identifier: GPL-2.0
-ARG BASE_IMAGE
-FROM ubuntu:18.04
+ARG BASE
+FROM ubuntu:22.04 as base
 
-LABEL org.opencontainers.image.description="From: https://github.com/yiminghu/AnnoPred"
-
+ARG BASE
 ARG RUN_CMD
 
-RUN apt -y update && apt -y upgrade && \
+RUN apt -y update -qq && apt -y upgrade && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y \
+	--no-install-recommends --no-install-suggests \
+	python3-bitarray \
+	python3-h5py \
+	python3-numpy \
+	python3-pandas \
+	python3-pybedtools \
+	python3-pysam \
+	python3-scipy \
+	python3-sklearn \
+	python3-venv \
+	zlib1g \
+	&& update-alternatives --install /usr/bin/python python \
+		/usr/bin/python3 1 \
+	&& \
+	apt -y clean && rm -rf /var/lib/apt/lists/* /tmp/*
+
+#ENV VIRTUAL_ENV=/opt/venv
+#RUN python3 -m venv $VIRTUAL_ENV
+#ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+FROM base as builder
+
+RUN apt -y update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+	--no-install-recommends --no-install-suggests \
 	build-essential \
+	gcc \
 	git \
-	wget \
-	python \
-	python-h5py \
-	python-scipy \
-	python-numpy \
-	python-sklearn \
-	python-pandas \
-	python-bitarray \
-	python-pysam \
-	python-pip \
+	python3-pip \
+	libpython3-dev \
+	python3-dev \
 	zlib1g-dev
 
-RUN pip install pybedtools plinkio
+RUN pip install plinkio
 
-WORKDIR /src
-RUN git clone https://github.com/yiminghu/AnnoPred.git && \
-	 git clone https://github.com/bulik/ldsc.git
-WORKDIR /src/AnnoPred
-RUN echo "LDSC_path /src/ldsc" > LDSC.config
+WORKDIR /usr/src
+
+RUN git clone -b patches https://github.com/thebigcorporation/AnnoPred.git && \
+	git clone https://github.com/bulik/ldsc.git && \
+	echo "LDSC_path /usr/src/ldsc" > AnnoPred/LDSC.config
+
+WORKDIR /usr/src/AnnoPred
 
 # Source code will be root/root, so to allow for adding
 # the required ref files to the AnnoPred directory, we need
 # to change the permissions. Unfortunately, the 'ref' directory
 # is too large to place into the container, but MUST be in the same
 # directory as the AnnoPred source code.
-RUN chmod 777 .
+RUN chmod 555 .
 
-ARG TEST="/test.sh"
-COPY --chmod=0555 src/test/$RUN_CMD.sh ${TEST}
+COPY --chmod=0555 src/test/$RUN_CMD.sh /test.sh
+
+LABEL org.opencontainers.image.description="From: https://github.com/yiminghu/AnnoPred"

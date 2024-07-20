@@ -3,6 +3,9 @@ name: Docker Image CI
 on:
   pull_request:
     branches: [ "main" ]
+  push:
+    tags-ignore: ["*"]
+  workflow_dispatch:
 
 jobs:
 
@@ -12,10 +15,13 @@ jobs:
 
     steps:
     - name: 'Checkout Actions'
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 5
+        fetch-tags: true
 
     - name: 'Build the Docker image'
-      run: make docker
+      run: IMAGE_REPO=ghcr.io make docker
 
     - name: 'Test the Docker image'
-      run: make docker_test
+      run: IMAGE_REPO=ghcr.io make docker_test
